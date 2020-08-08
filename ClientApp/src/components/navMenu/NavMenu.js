@@ -38,7 +38,7 @@ export class NavMenu extends Component {
                 >
                     <Container>
                         <NavbarBrand tag={Link} to='/'>
-                            AlgorithmProgramingGame_WebApp
+                            COGNIZANT CHALANGE
                         </NavbarBrand>
                         <NavbarToggler onClick={this.toggleNavbar} className='mr-2' />
                         <Collapse
@@ -47,6 +47,16 @@ export class NavMenu extends Component {
                             navbar
                         >
                             <ul className='navbar-nav flex-grow'>
+                                <NavItem>
+                                    <NavLink tag={Link} className='text-dark' to='/code-submission'>
+                                        SOLVE
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} className='text-dark' to='/scores'>
+                                        TOP 3
+                                    </NavLink>
+                                </NavItem>
                                 <NavItem>
                                     <NavLink tag={Link} className='text-dark' to='/'>
                                         Home
