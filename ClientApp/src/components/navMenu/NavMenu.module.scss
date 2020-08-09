@@ -1,0 +1,33 @@
+﻿@import '../../constants/styleConstants.scss';
+
+.navBar {
+    background-color: $color-blue;
+    height: $header-height;
+}
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+.navLink {
+    color: $text-light !important;
+    font-size: $base-font-size;
+    font-weight: $bold;
+}
+
+
+html {
+    font-size: $base-font-size
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: $min768-font-size
+    }
+}
+
+.box-shadow {
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+}

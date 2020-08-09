@@ -9,7 +9,9 @@ import {
     NavLink,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import './NavMenu.css';
+import classnames from 'classnames';
+
+import styles from './NavMenu.module.scss';
 
 export class NavMenu extends Component {
     static displayName = NavMenu.name;
@@ -33,14 +35,19 @@ export class NavMenu extends Component {
         return (
             <header>
                 <Navbar
-                    className='navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3'
-                    light
+                    dark
+                    className={classnames(
+                        styles.navBar,
+                        'navbar-expand-md navbar-toggleable-sm ng-white box-shadow mb-3',
+                    )}
                 >
                     <Container>
                         <NavbarBrand tag={Link} to='/'>
                             COGNIZANT CHALANGE
                         </NavbarBrand>
+
                         <NavbarToggler onClick={this.toggleNavbar} className='mr-2' />
+
                         <Collapse
                             className='d-sm-inline-flex flex-sm-row-reverse'
                             isOpen={!this.state.collapsed}
@@ -48,27 +55,31 @@ export class NavMenu extends Component {
                         >
                             <ul className='navbar-nav flex-grow'>
                                 <NavItem>
-                                    <NavLink tag={Link} className='text-dark' to='/code-submission'>
+                                    <NavLink
+                                        tag={Link}
+                                        className={styles.navLink}
+                                        to='/code-submission'
+                                    >
                                         SOLVE
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className='text-dark' to='/scores'>
+                                    <NavLink tag={Link} className={styles.navLink} to='/scores'>
                                         TOP 3
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className='text-dark' to='/'>
+                                    <NavLink tag={Link} className={styles.navLink} to='/'>
                                         Home
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className='text-dark' to='/counter'>
+                                    <NavLink tag={Link} className={styles.navLink} to='/counter'>
                                         Counter
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className='text-dark' to='/fetch-data'>
+                                    <NavLink tag={Link} className={styles.navLink} to='/fetch-data'>
                                         Fetch data
                                     </NavLink>
                                 </NavItem>

@@ -1,7 +1,12 @@
-﻿import React, { Fragment, useReducer } from 'react';
-import { InputField } from '../../components/form/formFields/InputField';
-import { DropdownSelectField } from '../../components/form/formFields/DropdownSelectField';
+﻿import React, { useReducer } from 'react';
+
+import { InputField } from '../../components/formFields/InputField';
+import { DropdownSelectField } from '../../components/formFields/DropdownSelectField';
 import { Button } from '../../components/button/Button';
+import { FormFooter } from '../../components/formFields/FormFooter';
+
+import { requestPostCodeSubmission } from './codeSubmissionApi';
+import styles from './CodeSubmissionForm.module.scss';
 
 const initialFormState = {};
 
@@ -15,16 +20,21 @@ const CodeSubmissionForm = () => {
         initialFormState,
     );
 
+    const handleSubmit = async () => {
+        const response = await requestPostCodeSubmission(formState);
+        // success pop-up
+    };
+
     return (
-        <Fragment>
-            <div>
-                <InputField name={'NAME'} />
-                <DropdownSelectField name={'SELECT TASK'} values={[]} />
-                <InputField disabled name={'SOLUTION CODE'} value={'LORE IPSUM'} />
-                <InputField name={'SOLUTION CODE'} />
-                <Button text={'SUBMIT'} type={BUTTON_TYPE.SUBMIT} onClick={() => null} />
-            </div>
-        </Fragment>
+        <div className={styles.formContainer}>
+            <InputField name={'NAME'} />
+            <DropdownSelectField name={'SELECT TASK'} placeholder={'Search...'} values={[]} />
+            <InputField disabled name={'DESCRIPTION'} value={'LORE IPSUM'} />
+            <InputField isTextarea name={'SOLUTION CODE'} />
+            <FormFooter>
+                <Button text={'SUBMIT'} type={BUTTON_TYPE.SUBMIT} onClick={handleSubmit} />
+            </FormFooter>
+        </div>
     );
 };
 

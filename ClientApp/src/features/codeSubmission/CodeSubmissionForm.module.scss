@@ -1,0 +1,10 @@
+@import '../../constants/styleConstants.scss';
+
+.formContainer {
+  max-width: $content-width;
+  background: #fff;
+  box-shadow: 0 1px 2px 1px rgba(125, 125, 125, 0.2);
+  padding: 30px;
+  margin: 60px auto;
+}
+

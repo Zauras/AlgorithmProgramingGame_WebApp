@@ -1,8 +1,9 @@
 ﻿import React from 'react';
 
+import { FormField } from './FormField';
+
 export const TextField = ({ name, text }) => (
-    <div>
-        <span>{name}</span>
+    <FormField name={name}>
         <span>{text}</span>
-    </div>
+    </FormField>
 );

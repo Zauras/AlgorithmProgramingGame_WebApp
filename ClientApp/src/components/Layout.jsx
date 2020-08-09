@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Container } from 'reactstrap';
+
 import { NavMenu } from './navMenu/NavMenu';
 
 export class Layout extends Component {

@@ -1,0 +1,26 @@
+@import '../../constants/styleConstants.scss';
+
+$gridArea-fieldName: "fieldName";
+$gridArea-fieldValue: "fieldValue";
+
+.formField {
+  display: grid;
+  max-width: $content-width;
+  margin: 25px auto;
+  grid-template-columns: 150px 400px;
+  grid-template-areas: "#{$gridArea-fieldName} #{$gridArea-fieldName}";
+  
+  .fieldName {
+    grid-area: $gridArea-fieldName;
+    margin-right: 20px;
+  }
+  
+  .fieldValueContainer {
+    grid-area: $gridArea-fieldName;
+    
+    .inputField {
+      width: 100%;
+    }
+  }
+}
+
