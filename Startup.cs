@@ -1,3 +1,7 @@
+using AlgorithmProgramingGame_WebApp.Providers;
+using AlgorithmProgramingGame_WebApp.Providers.Facade;
+using AlgorithmProgramingGame_WebApp.Services;
+using AlgorithmProgramingGame_WebApp.Services.Facade;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -23,7 +27,15 @@ namespace AlgorithmProgramingGame_WebApp
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+            services.AddSpaStaticFiles(configuration =>
+                { configuration.RootPath = "ClientApp/build"; });
+            
+            // Configure Dependency Injection
+            // Services:
+            services.AddSingleton<IScoreService, ScoreService>();
+            services.AddSingleton<ISolutionService, SolutionService>();
+            // Providers:
+            services.AddSingleton<IScoreProvider, ScoreProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

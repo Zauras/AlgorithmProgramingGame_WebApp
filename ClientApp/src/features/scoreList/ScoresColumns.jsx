@@ -6,23 +6,29 @@ const getScoresColumns = () => [
     {
         dataField: 'placeIndex',
         text: 'PLACE',
+        sort: true,
     },
     {
-        dataField: 'name',
+        dataField: 'userName',
         text: 'NAME',
+        sort: true,
     },
     {
         dataField: 'successCount',
         text: 'SUCCESS SOLUTIONS',
+        sort: true,
     },
     {
         dataField: 'successRate',
         text: 'SUCCESS RATE',
+        sort: true,
+        formatter: (cell) => `${cell * 100} %`,
     },
     {
-        dataField: 'tasks',
+        dataField: 'taskNames',
         text: 'TASKS',
-        //formatter: (cell, row, rowIndex, formatExtraData) => (cell === 1 ? `${cell} (You)` : cell),
+        sort: true,
+        formatter: (cell) => cell.reduce((cellValue, taskName) => `${taskName} `, ''),
     },
 ];
 

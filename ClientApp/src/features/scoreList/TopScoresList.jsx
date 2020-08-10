@@ -21,6 +21,7 @@ const TopScoresList = () => {
         setIsLoading(true);
         try {
             const response = await requestTopScores(countOfTopScores);
+            console.log(response);
             Boolean(response) ? setScoresList(response) : setScoresList([]);
         } catch (error) {
             setScoresList([]);
@@ -40,6 +41,7 @@ const TopScoresList = () => {
                 data={scoresList}
                 columns={columns}
                 defaultSorted={defaultSorted}
+                sortable
                 bordered={false}
                 hover
                 striped

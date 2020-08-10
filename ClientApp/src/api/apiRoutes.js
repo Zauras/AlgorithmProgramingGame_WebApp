@@ -1,9 +1,9 @@
 export const getApiRoute = {
     SOLUTIONS: {
-        SUBMIT: () => `/submit-solution`,
+        SUBMIT: () => `solution/submit`,
     },
 
     SCORES: {
-        GET_TOP: (countOfTopScores) => `scores/top/${countOfTopScores}`,
+        GET_TOP: (countOfTopScores) => `score/top/${countOfTopScores}`,
     },
 };

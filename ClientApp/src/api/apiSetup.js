@@ -25,12 +25,11 @@ axiosInstance.interceptors.request.use((request) => {
     return request;
 });
 
-axiosInstance.interceptors.response.use((response) => response.data.data);
+axiosInstance.interceptors.response.use((response) => response.data);
 
 const errorHandler = async (request) => {
     try {
-        const response = await request();
-        return response;
+        return await request();
     } catch (error) {
         if (error.response) {
             throw error.response;
