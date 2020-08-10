@@ -16,7 +16,7 @@ namespace AlgorithmProgramingGame_WebApp.Providers
             var dbClient = new MongoClient(settings.ConnectionString);
             var database = dbClient.GetDatabase(settings.DatabaseName);
 
-            _tasks = database.GetCollection<CodeTaskEntity>(settings.TaskCollectionName);
+            _tasks = database.GetCollection<CodeTaskEntity>(settings.CodeTaskCollectionName);
         }
 
         public IEnumerable<CodeTaskModel> GetAll()
@@ -24,8 +24,7 @@ namespace AlgorithmProgramingGame_WebApp.Providers
             var taskEntities = _tasks.Find(task => true).ToList();
             return taskEntities.Select(CodeTaskModel.ToDomainModel);
         }
-
-
+        
         // public CodeTaskModel Create(CodeTaskEntity task)
         // {
         //     _tasks.InsertOne(task);
