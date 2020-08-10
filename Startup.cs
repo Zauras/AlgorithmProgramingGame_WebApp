@@ -1,14 +1,16 @@
-using AlgorithmProgramingGame_WebApp.Providers;
-using AlgorithmProgramingGame_WebApp.Providers.Facade;
-using AlgorithmProgramingGame_WebApp.Services;
-using AlgorithmProgramingGame_WebApp.Services.Facade;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+
+using AlgorithmProgramingGame_WebApp.Providers;
+using AlgorithmProgramingGame_WebApp.Providers.DataModels;
+using AlgorithmProgramingGame_WebApp.Providers.Facade;
+using AlgorithmProgramingGame_WebApp.Services;
+using AlgorithmProgramingGame_WebApp.Services.Facade;
 
 namespace AlgorithmProgramingGame_WebApp
 {
@@ -31,10 +33,19 @@ namespace AlgorithmProgramingGame_WebApp
                 { configuration.RootPath = "ClientApp/build"; });
             
             // Configure Dependency Injection
+            services.Configure<CodeSolutionsDatabaseSettings>(
+                Configuration.GetSection(nameof(CodeSolutionsDatabaseSettings)));
+
+            services.AddSingleton<ICodeSolutionsDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<CodeSolutionsDatabaseSettings>>().Value);
+            
             // Services:
+            services.AddSingleton<ICodeTaskService, CodeTaskService>();
             services.AddSingleton<IScoreService, ScoreService>();
             services.AddSingleton<ISolutionService, SolutionService>();
+            
             // Providers:
+            services.AddSingleton<ICodeTaskProvider, CodeTaskProvider>();
             services.AddSingleton<IScoreProvider, ScoreProvider>();
         }
 
