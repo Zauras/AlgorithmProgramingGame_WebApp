@@ -4,6 +4,6 @@ namespace AlgorithmProgramingGame_WebApp.Services.Facade
 {
     public interface ISolutionService
     {
-        public void SubmitTaskSolution(TaskSolutionSubmissionModel taskSolutionSubmission);
+        public TaskSolutionSubmissionResponseModel SubmitTaskSolution(TaskSolutionSubmissionModel taskSolutionSubmission);
     }
 }

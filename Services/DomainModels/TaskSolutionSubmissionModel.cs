@@ -6,20 +6,20 @@ namespace AlgorithmProgramingGame_WebApp.Services.DomainModels
     {
         public string UserName { get; set; }
 
-        public int TaskId { get; set; }
+        public int CodeTaskId { get; set; }
 
-        public string CodeString { get; set; }
+        public string TaskSolution { get; set; }
         
         
-        public TaskSolutionSubmissionModel(string userName, int taskId, string codeString)
+        public TaskSolutionSubmissionModel(string userName, int codeTaskId, string taskSolution)
         {
             UserName = userName;
-            TaskId = taskId;
-            CodeString = codeString;
+            CodeTaskId = codeTaskId;
+            TaskSolution = taskSolution;
         }
         
         public static TaskSolutionSubmissionModel ToDomainModel(TaskSolutionSubmissionApiDto dto) =>
-            new TaskSolutionSubmissionModel(dto.UserName, dto.TaskId, dto.CodeString);
+            new TaskSolutionSubmissionModel(dto.UserName, dto.CodeTaskId, dto.TaskSolution);
 
     }
 }

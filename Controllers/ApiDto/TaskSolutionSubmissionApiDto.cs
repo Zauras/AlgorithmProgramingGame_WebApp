@@ -4,8 +4,8 @@
     {
         public string UserName { get; set; }
 
-        public int TaskId { get; set; }
+        public int CodeTaskId { get; set; }
 
-        public string CodeString { get; set; }
+        public string TaskSolution { get; set; }
     }
 }

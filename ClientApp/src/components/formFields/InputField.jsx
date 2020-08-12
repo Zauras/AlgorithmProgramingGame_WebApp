@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Input } from 'reactstrap';
 
 import { FormField } from './FormField';
 import styles from './FormField.module.scss';
@@ -13,7 +14,8 @@ const DEFAULT_MAX_CHARS_OF_INPUT_FIELD = 200;
 export const InputField = ({ name, isTextarea = false, ...restProps }) =>
     isTextarea ? (
         <FormField name={name}>
-            <textarea
+            <Input
+                type='textarea'
                 className={styles.inputField}
                 rows={DEFAULT_COUNT_OF_ROWS_IN_TEXT_AREA}
                 maxLength={DEFAULT_MAX_CHARS_OF_TEXT_AREA}
@@ -22,7 +24,7 @@ export const InputField = ({ name, isTextarea = false, ...restProps }) =>
         </FormField>
     ) : (
         <FormField name={name}>
-            <input
+            <Input
                 className={styles.inputField}
                 maxLength={DEFAULT_MAX_CHARS_OF_INPUT_FIELD}
                 {...restProps}

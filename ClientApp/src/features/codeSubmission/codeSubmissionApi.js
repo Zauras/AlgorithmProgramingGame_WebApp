@@ -7,5 +7,5 @@ export const requestCodeTasks = () => {
 
 export const requestPostCodeSubmission = (formState) => {
     const url = getApiRoute.SOLUTIONS.SUBMIT();
-    return api.get(url, formState);
+    return api.post(url, formState);
 };

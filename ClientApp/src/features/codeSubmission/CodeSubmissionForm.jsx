@@ -22,7 +22,7 @@ const initFormState = {
 
 const initFormErrors = {
     userName: undefined,
-    codeTask: undefined,
+    codeTaskId: undefined,
     taskSolution: undefined,
 };
 
@@ -58,10 +58,6 @@ const CodeSubmissionForm = () => {
         (initFormErrors) => initFormErrors,
     );
 
-    useEffect(() => {
-        (async () => fetchCodeTasks())();
-    }, []);
-
     const fetchCodeTasks = async () => {
         setIsLoading(true);
         try {
@@ -73,26 +69,32 @@ const CodeSubmissionForm = () => {
         setIsLoading(false);
     };
 
+    useEffect(() => {
+        (async () => fetchCodeTasks())();
+    }, []);
+
     const taskSelectOptions = useMemo(
         () =>
-            codeTasks.map((task, index) => ({
-                value: index,
+            codeTasks.map((task) => ({
+                value: task.codeTaskId,
                 label: task.name,
             })),
         [codeTasks],
     );
 
-    const handleTaskSelection = ({ value }) => {
-        setSelectedTaskId(value);
-        setFormState({ codeTask: codeTasks[value].name });
+    const handleTaskSelection = ({ value: codeTaskId }) => {
+        setSelectedTaskId(codeTaskId);
+        setFormState({ codeTaskId });
     };
 
-    const taskDescription = useMemo(
-        () => (Boolean(codeTasks[selectedTaskId]) ? codeTasks[selectedTaskId].description : ''),
-        [codeTasks, selectedTaskId],
-    );
+    const taskDescription = useMemo(() => {
+        const selectedTask = codeTasks.find((task) => task.codeTaskId === selectedTaskId);
+        return Boolean(selectedTask) ? selectedTask.description : '';
+    }, [codeTasks, selectedTaskId]);
 
-    console.log(taskDescription);
+    const handleNameInputChange = (event) => setFormState({ userName: event.target.value });
+
+    const handleSolutionInputChange = (event) => setFormState({ taskSolution: event.target.value });
 
     const handleSubmit = async () => {
         // TODO: Add form validation
@@ -105,7 +107,7 @@ const CodeSubmissionForm = () => {
         <Fragment>
             <LoaderScreen dim isLoading={isLoading} />
             <div className={styles.formContainer}>
-                <InputField name={'NAME'} />
+                <InputField name={'NAME'} onChange={handleNameInputChange} />
                 <DropdownSelectField
                     name={'SELECT TASK'}
                     placeholder={'Search...'}
@@ -114,13 +116,18 @@ const CodeSubmissionForm = () => {
                 />
                 <InputField
                     disabled
-                    placeholder={'Please select the task...'}
+                    placeholder={'Please select the task ...'}
                     isTextarea
                     rows={6}
                     name={'DESCRIPTION'}
                     value={taskDescription}
                 />
-                <InputField isTextarea name={'SOLUTION CODE'} />
+                <InputField
+                    isTextarea
+                    name={'SOLUTION CODE'}
+                    placeholder={'Here goes tasks implementation in C# ...'}
+                    onChange={handleSolutionInputChange}
+                />
                 <FormFooter>
                     <Button text={'SUBMIT'} type={BUTTON_TYPE.SUBMIT} onClick={handleSubmit} />
                 </FormFooter>

@@ -21,11 +21,13 @@ namespace AlgorithmProgramingGame_WebApp.Controllers
             _logger = logger;
             _solutionService = solutionService;
         }
-        
-        [HttpPost("/submit")]
-        public void SubmitTaskSolution([FromBody] TaskSolutionSubmissionApiDto taskSolutionSubmission) =>
-            _solutionService.SubmitTaskSolution(TaskSolutionSubmissionModel.ToDomainModel(taskSolutionSubmission));
 
+        [HttpPost("submit")]
+        public void SubmitTaskSolution([FromBody] TaskSolutionSubmissionApiDto taskSolutionSubmission)
+        {
+            _solutionService.SubmitTaskSolution(TaskSolutionSubmissionModel.ToDomainModel(taskSolutionSubmission));
+        }
+        
     }
 
 }

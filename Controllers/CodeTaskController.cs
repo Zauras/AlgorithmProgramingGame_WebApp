@@ -38,9 +38,6 @@ namespace AlgorithmProgramingGame_WebApp.Controllers
         [HttpGet("all")]
         public ActionResult<IEnumerable<CodeTaskApiDto>> GetCodeTasks()
         {
-            var z = "Whatever";
-            var x = _codeTaskService.GetCodeTasks();
-            //return new Kebab { Name = "kebab"};
             return _codeTaskService.GetCodeTasks().Select(CodeTaskModel.ToApiDto).ToList();
         }
 

@@ -14,7 +14,7 @@ const getCommonHeaders = () => {
 const axiosInstance = axios.create({
     baseURL: `${urlConfig[window.location.host]}`,
     headers: getCommonHeaders(),
-    transformResponse: [(data) => JSON.parse(data)],
+    // transformResponse: [(data) => JSON.parse(data)],
 });
 
 axiosInstance.interceptors.request.use((request) => {

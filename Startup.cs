@@ -46,7 +46,7 @@ namespace AlgorithmProgramingGame_WebApp
             
             // Providers:
             services.AddSingleton<ICodeTaskProvider, CodeTaskProvider>();
-            services.AddSingleton<IScoreProvider, ScoreProvider>();
+            services.AddSingleton<IUserProvider, UserProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,16 +8,16 @@ namespace AlgorithmProgramingGame_WebApp.Services
 {
     public class ScoreService : IScoreService
     {
-        private readonly IScoreProvider _scoreProvider;
+        private readonly IUserProvider _userProvider;
     
-        public ScoreService(IScoreProvider scoreProvider)
+        public ScoreService(IUserProvider userProvider)
         {
-            _scoreProvider = scoreProvider;
+            _userProvider = userProvider;
         }
         
         public IEnumerable<ScoreModel> GetTopScores(int countOfTopScores)
         {
-            return _scoreProvider.GetTopScores(countOfTopScores);
+            return _userProvider.GetTopScores(countOfTopScores);
         }
     }
 }
