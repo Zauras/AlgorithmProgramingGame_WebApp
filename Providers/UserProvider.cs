@@ -62,22 +62,29 @@ namespace AlgorithmProgramingGame_WebApp.Providers
                     }
                 });
             }
-
-            //
-            // _scores.Add(
-            //     new ScoreModel(
-            //         _scores.Count + 1,
-            //         taskSolutionSubmission.UserName,
-            //         1,
-            //         1, 
-            //         new[] {"Fibonacci Sequence"}
-            //         )
-            //     );
         }
 
-        public void IncrementSubmissionsCount(string userName, int amountOfIncrement = 1)
+        public void RegisterFailedScore(string userName)
         {
-            var update = new UpdateDefinitionBuilder<UserEntity>().Inc(e => e.SubmissionsCount, 1);
+            if (IsNameExists(userName))
+            {
+                IncrementSubmissionsCount(userName);
+            }
+            else
+            {
+                Create(new UserEntity
+                {
+                    Name = userName,
+                    SubmissionsCount = 1,
+                    Scores = new ScoreEntity[0]
+                });
+            }
+        }
+
+        private void IncrementSubmissionsCount(string userName, int amountOfIncrement = 1)
+        {
+            
+            var update = new UpdateDefinitionBuilder<UserEntity>().Inc(e => e.SubmissionsCount, amountOfIncrement);
             _users.FindOneAndUpdate(e => e.Name == userName, update);
         }
 

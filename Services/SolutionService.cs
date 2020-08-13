@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
@@ -49,43 +52,43 @@ namespace AlgorithmProgramingGame_WebApp.Services
         
         public TaskSolutionSubmissionResponseModel SubmitTaskSolution(TaskSolutionSubmissionModel taskSolutionSubmission)
         {
-            _userProvider.AddScore(taskSolutionSubmission);
-
-            //var result = GenerateAssembly(taskSolutionSubmission.TaskSolution, "GetResult");
+            var computationResult = GenerateAssembly(taskSolutionSubmission.TaskSolution, "GetResult");
             var response = new TaskSolutionSubmissionResponseModel();
             
-            // if (result is string errorMessage)
-            // {
-            //     // Compilation error
-            //     response.ErrorMessage = errorMessage;
-            //     return response;
-            // }
-            //
-            // var expectedResult = new [] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377 };
-            //
-            // //_userProvider.RegisterSubmission();
-            // if (expectedResult == result)
-            // {
-            //     // Score
-            //     _userProvider.AddScore(taskSolutionSubmission);
-            //     response.IsSuccess = true;
-            // }
-            // else
-            // {
-            //     // Count but not score
-            //     _userProvider.IncrementSubmissionsCount();
-            //     response.IsSuccess = false;
-            // }
+            if (computationResult.Error != null)
+            {
+                // Compilation error
+                response.ErrorMessage = computationResult.Error;
+                return response;
+            }
+            
+            var expectedResult = new [] { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377 };
+            
+            bool isResultTruthy = expectedResult.SequenceEqual((int[]) computationResult.Result);
+            if (isResultTruthy)
+            {
+                // Score
+                _userProvider.AddScore(taskSolutionSubmission);
+                response.IsSuccess = true;
+                return response;
+            }
 
+            // Count but not score
+            _userProvider.RegisterFailedScore(taskSolutionSubmission.UserName);
+            response.IsSuccess = false;
             return response;
         }
         
         
 
-        private object GenerateAssembly(string code, string targetedMethodName)
+        private ComputationModel GenerateAssembly(string code, string targetedMethodName)
         {
+            var response = new ComputationModel();
+            
             var tree = SyntaxFactory.ParseSyntaxTree(code);
             string fileName="TaskSolution.dll";
+            string pathToAssembly = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+
             // Detect the file location for the library that defines the object type
             var systemRefLocation=typeof(object).GetTypeInfo().Assembly.Location;
             // Create a reference to the library
@@ -98,38 +101,57 @@ namespace AlgorithmProgramingGame_WebApp.Services
                 .AddReferences(systemReference)
                 .AddSyntaxTrees(tree);
             
-            string path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
-            EmitResult compilationResult = compilation.Emit(path);
+            
+            //Do something with the loaded 'assembly'
+            EmitResult compilationResult = compilation.Emit(pathToAssembly);
 
             if(compilationResult.Success)
             {
                 // Load the assembly
-                Assembly asm =
-                    AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
+                //Assembly asm = Assembly.Load(System.IO.File.ReadAllBytes(path));
+                Assembly asm = Assembly.Load(File.ReadAllBytes(pathToAssembly));
+                              //AssemblyLoadContext.Default.LoadFromAssemblyPath(pathToAssembly);
+                
                 // Invoke the RoslynCore.Helper.CalculateCircleArea method passing an argument
                 int number = 15;
                 object result = 
                     asm.GetType("Solution")
                         .GetMethod(targetedMethodName)
                         .Invoke(null, new object[] { number });
-
-                return result;
+                
+                try
+                {
+                    File.Delete(pathToAssembly);
+                }
+                catch (UnauthorizedAccessException exception)
+                {
+                    Console.WriteLine(exception);
+                }
+                catch (IOException exception)
+                {
+                    Console.WriteLine(exception);
+                }
+                
+                response.Result = result;
+                return response;
             }
-            else
-            {
+
+
+            string errorMessage = "";
                 foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
                 {
-                    string issue = $@"
-                                    ID: {codeIssue.Id}, Message: {codeIssue.GetMessage()},
-                                    Location: {codeIssue.Location.GetLineSpan()},
-                                    Severity: {codeIssue.Severity}
-                                    ";
-                    
-                    return issue;
+                    errorMessage += $@"
+                            ID: {codeIssue.Id}, Message: {codeIssue.GetMessage()},
+                            Location: {codeIssue.Location.GetLineSpan()},
+                            Severity: {codeIssue.Severity}
+                            ";
                 }
+
+            response.Error = errorMessage;
+            
+
+            return response;
             }
-            return null;
-        }
     }
     
 }

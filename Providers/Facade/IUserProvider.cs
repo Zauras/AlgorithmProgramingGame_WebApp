@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using AlgorithmProgramingGame_WebApp.Providers.DataModels;
 using AlgorithmProgramingGame_WebApp.Services.DomainModels;
 
 namespace AlgorithmProgramingGame_WebApp.Providers.Facade
@@ -12,7 +11,7 @@ namespace AlgorithmProgramingGame_WebApp.Providers.Facade
 
         public void AddScore(TaskSolutionSubmissionModel taskSolutionSubmission);
 
-        public void IncrementSubmissionsCount(string userName, int amountOfIncrement = 1);
+        public void RegisterFailedScore(string userName);
 
     }
 }
