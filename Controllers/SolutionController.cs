@@ -23,10 +23,11 @@ namespace AlgorithmProgramingGame_WebApp.Controllers
         }
 
         [HttpPost("submit")]
-        public void SubmitTaskSolution([FromBody] TaskSolutionSubmissionApiDto taskSolutionSubmission)
-        {
-            _solutionService.SubmitTaskSolution(TaskSolutionSubmissionModel.ToDomainModel(taskSolutionSubmission));
-        }
+        public ActionResult<TaskSolutionSubmissionResponseApiDto> SubmitTaskSolution(
+            [FromBody] TaskSolutionSubmissionApiDto taskSolutionSubmission) =>
+            _solutionService.SubmitTaskSolution(
+                    TaskSolutionSubmissionModel.ToDomainModel(taskSolutionSubmission))
+                .ToApiDto();
         
     }
 

@@ -47,6 +47,7 @@ namespace AlgorithmProgramingGame_WebApp.Services
         public SolutionService(IUserProvider userProvider)
         {
             _userProvider = userProvider;
+            Console.WriteLine(code);
         }
         
         
@@ -138,14 +139,14 @@ namespace AlgorithmProgramingGame_WebApp.Services
 
 
             string errorMessage = "";
-                foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
-                {
-                    errorMessage += $@"
-                            ID: {codeIssue.Id}, Message: {codeIssue.GetMessage()},
-                            Location: {codeIssue.Location.GetLineSpan()},
-                            Severity: {codeIssue.Severity}
-                            ";
-                }
+            foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
+            {
+                errorMessage += $@"
+                        ID: {codeIssue.Id}, Message: {codeIssue.GetMessage()},
+                        Location: {codeIssue.Location.GetLineSpan()},
+                        Severity: {codeIssue.Severity}
+                        ";
+            }
 
             response.Error = errorMessage;
             

@@ -14,8 +14,8 @@ const getScoresColumns = () => [
         sort: true,
     },
     {
-        dataField: 'successCount',
-        text: 'SUCCESS SOLUTIONS',
+        dataField: 'scoreCount',
+        text: 'SOLVED',
         sort: true,
     },
     {
@@ -27,7 +27,7 @@ const getScoresColumns = () => [
     {
         dataField: 'taskNames',
         text: 'TASKS',
-        sort: true,
+        sort: false,
         formatter: (cell) => cell.reduce((cellValue, taskName) => `${taskName} `, ''),
     },
 ];

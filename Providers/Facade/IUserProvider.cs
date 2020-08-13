@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using AlgorithmProgramingGame_WebApp.Providers.DataModels;
 using AlgorithmProgramingGame_WebApp.Services.DomainModels;
 
 namespace AlgorithmProgramingGame_WebApp.Providers.Facade
 {
     public interface IUserProvider
     {
-        public IEnumerable<ScoreModel> GetTopScores(int countOfTopScores);
+        public IEnumerable<UserScoreDto> GetTopScores(int countOfTopScores);
 
         public bool IsNameExists(string name);
 
