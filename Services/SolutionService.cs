@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
+using AlgorithmProgramingGame_WebApp.Controllers.ApiDto;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -17,49 +17,30 @@ namespace AlgorithmProgramingGame_WebApp.Services
     public class SolutionService: ISolutionService
     {
         private readonly IUserProvider _userProvider;
-        
-        const string code = @"
-                 public static class Solution
-                 {  
-                    public static int[] GetResult(int number)
-                    {
-                        var result = new int[number];
-                        int n1=0, n2=1, n3, i; 
+        private readonly ICodeTaskProvider _codeTaskProvider;
 
-                        result[0] = n1;
-                        result[1] = n2;
-
-                        for(i=2; i<number; ++i) //loop starts from 2 because 0 and 1 are already printed    
-                        {    
-                            n3=n1+n2;    
-                            n1=n2;    
-                            n2=n3;
-                            result[i] = n3;    
-                        }
-
-                        return result;
-                    }
-                 }
-                ";
-        
-        
-
-        public SolutionService(IUserProvider userProvider)
+        public SolutionService(IUserProvider userProvider, ICodeTaskProvider codeTaskProvider)
         {
             _userProvider = userProvider;
-            Console.WriteLine(code);
+            _codeTaskProvider = codeTaskProvider;
         }
         
         
         public TaskSolutionSubmissionResponseModel SubmitTaskSolution(TaskSolutionSubmissionModel taskSolutionSubmission)
         {
+            var taskIds = _codeTaskProvider.GetAll().Select(task => task.CodeTaskId);
+            if (!taskIds.Contains(taskSolutionSubmission.CodeTaskId))
+            {
+                return new TaskSolutionSubmissionResponseModel
+                    { ValidationErrorMessage = "Invalid Tasks selection" };
+            }
+            
             var computationResult = GenerateAssembly(taskSolutionSubmission.TaskSolution, "GetResult");
             var response = new TaskSolutionSubmissionResponseModel();
             
             if (computationResult.Error != null)
             {
-                // Compilation error
-                response.ErrorMessage = computationResult.Error;
+                response.ComputationErrorMessage = computationResult.Error;
                 return response;
             }
             
@@ -102,150 +83,57 @@ namespace AlgorithmProgramingGame_WebApp.Services
                 .AddReferences(systemReference)
                 .AddSyntaxTrees(tree);
             
-            
-            //Do something with the loaded 'assembly'
+
             EmitResult compilationResult = compilation.Emit(pathToAssembly);
 
             if(compilationResult.Success)
             {
-                // Load the assembly
-                //Assembly asm = Assembly.Load(System.IO.File.ReadAllBytes(path));
                 Assembly asm = Assembly.Load(File.ReadAllBytes(pathToAssembly));
-                              //AssemblyLoadContext.Default.LoadFromAssemblyPath(pathToAssembly);
-                
+
                 // Invoke the RoslynCore.Helper.CalculateCircleArea method passing an argument
                 int number = 15;
-                object result = 
-                    asm.GetType("Solution")
-                        .GetMethod(targetedMethodName)
-                        .Invoke(null, new object[] { number });
                 
-                try
+                var computationMethod = asm.GetType("Solution")?.GetMethod(targetedMethodName);
+                if (computationMethod == null)
                 {
-                    File.Delete(pathToAssembly);
+                    response.Error = $"Invalid code structure. Please have static Solution class with static {targetedMethodName} method";
                 }
-                catch (UnauthorizedAccessException exception)
+                else
                 {
-                    Console.WriteLine(exception);
+                    object result = computationMethod .Invoke(null, new object[] { number });
+                    response.Result = result;
                 }
-                catch (IOException exception)
+            }
+            else
+            {
+                string errorMessage = "";
+                foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
                 {
-                    Console.WriteLine(exception);
+                    errorMessage += $@"Line {codeIssue.Location.GetLineSpan()}: {codeIssue.GetMessage()}.\n\n";
                 }
-                
-                response.Result = result;
+
+                response.Error = errorMessage;
+            }
+
+            try
+            {
+                File.Delete(pathToAssembly);
+            }
+            catch (UnauthorizedAccessException exception)
+            {
+                Console.WriteLine(exception);
+                response.Error = "Please delete TaskSolution.dll by hand...";
                 return response;
             }
-
-
-            string errorMessage = "";
-            foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
+            catch (IOException exception)
             {
-                errorMessage += $@"
-                        ID: {codeIssue.Id}, Message: {codeIssue.GetMessage()},
-                        Location: {codeIssue.Location.GetLineSpan()},
-                        Severity: {codeIssue.Severity}
-                        ";
+                Console.WriteLine(exception);
+                response.Error = "Please delete TaskSolution.dll by hand...";
+                return response;
             }
-
-            response.Error = errorMessage;
             
-
             return response;
             }
     }
     
 }
-
-
-// const string code = @"
-//                 using System;
-//                  public static class Solution
-//                  {  
-//                     public static int[] GetResult(int number)
-//                     {
-//                         var result = new int[number];
-//                         int n1=0, n2=1, n3, i; 
-//
-//                         result[0] = n1;
-//                         result[1] = n2;
-//
-//                         for(i=2; i<number; ++i) //loop starts from 2 because 0 and 1 are already printed    
-//                         {    
-//                             n3=n1+n2;    
-//                             n1=n2;    
-//                             n2=n3;
-//                             result[i] = n3;    
-//                         }
-//
-//                         return result;
-//                     }
-//                  }
-//                 ";
-
-
-// using System;
-// using System.IO;
-// using System.Reflection;
-// using System.Runtime.Loader;
-// using Microsoft.CodeAnalysis;
-// using Microsoft.CodeAnalysis.CSharp;
-// using Microsoft.CodeAnalysis.Emit;
-// namespace RoslynCore
-// {
-//   public static class EmitDemo
-//   {
-//     public static void GenerateAssembly()
-//     {
-//       const string code = @"using System;
-// using System.IO;
-// namespace RoslynCore
-// {
-//  public static class Helper
-//  {
-//   public static double CalculateCircleArea(double radius)
-//   {
-//     return radius * radius * Math.PI;
-//   }
-//   }
-// }";
-//       var tree = SyntaxFactory.ParseSyntaxTree(code);
-//       string fileName="mylib.dll";
-//       // Detect the file location for the library that defines the object type
-//       var systemRefLocation=typeof(object).GetTypeInfo().Assembly.Location;
-//       // Create a reference to the library
-//       var systemReference = MetadataReference.CreateFromFile(systemRefLocation);
-//       // A single, immutable invocation to the compiler
-//       // to produce a library
-//       var compilation = CSharpCompilation.Create(fileName)
-//         .WithOptions(
-//           new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-//         .AddReferences(systemReference)
-//         .AddSyntaxTrees(tree);
-//       string path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
-//       EmitResult compilationResult = compilation.Emit(path);
-//       if(compilationResult.Success)
-//       {
-//         // Load the assembly
-//         Assembly asm =
-//           AssemblyLoadContext.Default.LoadFromAssemblyPath(path);
-//         // Invoke the RoslynCore.Helper.CalculateCircleArea method passing an argument
-//         double radius = 10;
-//         object result = 
-//           asm.GetType("RoslynCore.Helper").GetMethod("CalculateCircleArea").
-//           Invoke(null, new object[] { radius });
-//         Console.WriteLine($"Circle area with radius = {radius} is {result}");
-//       }
-//       else
-//       {
-//         foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
-//         {
-//           string issue = $"ID: {codeIssue.Id}, Message: {codeIssue.GetMessage()},
-//             Location: {codeIssue.Location.GetLineSpan()},
-//             Severity: {codeIssue.Severity}";
-//           Console.WriteLine(issue);
-//         }
-//       }
-//     }
-//   }
-// }

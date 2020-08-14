@@ -5,13 +5,16 @@ namespace AlgorithmProgramingGame_WebApp.Services.DomainModels
     public class TaskSolutionSubmissionResponseModel 
     {
         public bool IsSuccess { get; set; }
-        public string ErrorMessage { get; set; }
+        public string ValidationErrorMessage { get; set; }
+        public string ComputationErrorMessage { get; set; }
         
         
-        public TaskSolutionSubmissionResponseApiDto ToApiDto() => new TaskSolutionSubmissionResponseApiDto
+        public TaskSolutionSubmissionResponseApiDto ToApiDto() => 
+            new TaskSolutionSubmissionResponseApiDto
         {
             IsSuccess = IsSuccess,
-            ErrorMessage = ErrorMessage
+            ValidationErrorMessage = ValidationErrorMessage, 
+            ComputationErrorMessage = ComputationErrorMessage
         };
 
     }

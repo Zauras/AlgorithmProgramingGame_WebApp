@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using AlgorithmProgramingGame_WebApp.Controllers.ApiDto;
@@ -24,10 +25,41 @@ namespace AlgorithmProgramingGame_WebApp.Controllers
 
         [HttpPost("submit")]
         public ActionResult<TaskSolutionSubmissionResponseApiDto> SubmitTaskSolution(
-            [FromBody] TaskSolutionSubmissionApiDto taskSolutionSubmission) =>
-            _solutionService.SubmitTaskSolution(
+            [FromBody] TaskSolutionSubmissionApiDto taskSolutionSubmission)
+        {
+            try
+            {
+                taskSolutionSubmission.UserName = taskSolutionSubmission.UserName.Trim();
+                if (string.IsNullOrEmpty(taskSolutionSubmission.UserName))
+                {
+                    return new TaskSolutionSubmissionResponseApiDto
+                        { ValidationErrorMessage = "User name must be not empty string" };
+                }
+                
+                taskSolutionSubmission.TaskSolution = taskSolutionSubmission.TaskSolution.Trim();
+                if (string.IsNullOrEmpty(taskSolutionSubmission.UserName))
+                {
+                    return new TaskSolutionSubmissionResponseApiDto
+                        { ValidationErrorMessage = "Task Solution must be not empty string" };
+                }
+            }
+            catch (Exception)
+            {
+                return new TaskSolutionSubmissionResponseApiDto
+                    { ValidationErrorMessage = "User Name and Task Solution must be not empty string" };
+            }
+
+            if (taskSolutionSubmission.CodeTaskId < 1)
+            {
+                return new TaskSolutionSubmissionResponseApiDto
+                    { ValidationErrorMessage = "Invalid Tasks selection" };
+            }
+
+            return _solutionService.SubmitTaskSolution(
                     TaskSolutionSubmissionModel.ToDomainModel(taskSolutionSubmission))
                 .ToApiDto();
+        }
+
         
     }
 
