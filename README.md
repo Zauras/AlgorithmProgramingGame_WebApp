@@ -34,5 +34,13 @@ How to run it:
 
 	 Both Frontend UI and Server API reachable through - https://localhost:5001/
 	 
+	 
+If you want to test Task Submission Form you can find Fibonacci solution code in ./TestAssets
+* If provided code gives correct answer you will get score
+* If provided code gives wrong or bad formatted answer it will be register as failed score attempt which would lower your success rate
+* If provided code with compilation errors or code which does not fulfill requirements it won't be register as submit attempt and you will see error in provided Console
+
+In Score List users are sorted by succeeded attempts
+	 
 	
 	 

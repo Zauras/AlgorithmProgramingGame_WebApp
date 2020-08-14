@@ -13,6 +13,9 @@ import { requestCodeTasks, requestPostCodeSubmission } from './codeSubmissionApi
 import 'react-notifications/lib/notifications.css';
 import styles from './CodeSubmissionForm.module.scss';
 
+const requirement =
+    'Provide task solution implemented with C#. Please implement cod ein such structure: code should be in static class called "Solution" which contained method called "GetResult". This method should return int[]';
+
 const BUTTON_TYPE = {
     SUBMIT: 'submit',
 };
@@ -172,6 +175,13 @@ const CodeSubmissionForm = () => {
                     rows={6}
                     name={'DESCRIPTION'}
                     value={taskDescription}
+                />
+                <InputField
+                    disabled
+                    isTextarea
+                    rows={5}
+                    name={'REQUIREMENTS'}
+                    value={requirement}
                 />
                 <InputField
                     isTextarea
