@@ -109,7 +109,9 @@ namespace AlgorithmProgramingGame_WebApp.Services
                 string errorMessage = "";
                 foreach (Diagnostic codeIssue in compilationResult.Diagnostics)
                 {
-                    errorMessage += $@"Line {codeIssue.Location.GetLineSpan()}: {codeIssue.GetMessage()}.\n\n";
+                    errorMessage += $@"Line {codeIssue.Location.GetLineSpan()}: {codeIssue.GetMessage()}.
+
+                                    ";
                 }
 
                 response.Error = errorMessage;

@@ -1,4 +1,5 @@
 ﻿import React, { Fragment, useEffect, useMemo, useReducer, useState } from 'react';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
 import { isEmpty } from 'lodash';
 
 import { InputField } from '../../components/formFields/InputField';
@@ -8,6 +9,8 @@ import { FormFooter } from '../../components/formFields/FormFooter';
 import LoaderScreen from '../../components/loader/LoaderScreen';
 
 import { requestCodeTasks, requestPostCodeSubmission } from './codeSubmissionApi';
+
+import 'react-notifications/lib/notifications.css';
 import styles from './CodeSubmissionForm.module.scss';
 
 const BUTTON_TYPE = {
@@ -26,26 +29,55 @@ const initFormErrors = {
     taskSolution: undefined,
 };
 
-const validateSolutionSubmissionForm = (formState) => {
-    const { userName, codeTask, taskSolution } = formState;
+const getSolutionSubmissionFormValidationErrors = (formState) => {
+    const { userName, codeTaskId, taskSolution } = formState;
     let errors = {};
 
     if (isEmpty(userName.trim())) {
-        errors[userName] = 'Please fill in your user name';
+        errors['userName'] = 'Please fill in your user name';
+    } else {
+        errors['userName'] = undefined;
     }
-    if (!Boolean(codeTask)) {
-        errors[codeTask] = 'Please choose the task';
+    if (!Boolean(codeTaskId)) {
+        errors['codeTask'] = 'Please choose the task';
+    } else {
+        errors['codeTask'] = undefined;
     }
     if (isEmpty(taskSolution.trim())) {
-        errors[taskSolution] = 'Please provide tasks implementation';
+        errors['taskSolution'] = 'Please provide tasks implementation';
+    } else {
+        errors['taskSolution'] = undefined;
     }
 
     return errors;
 };
 
+const NOTIFICATION_TYPE = {
+    SUCCESS: 'success',
+    COMPUTATION_ERROR: 'computationError',
+    WRONG_SOLUTION: 'wrongSolution',
+};
+
+const emitNotification = (type) => {
+    switch (type) {
+        case 'success':
+            NotificationManager.success('Task Submitted Successfully');
+            break;
+        case 'computationError':
+            NotificationManager.warning(
+                'Compilation error has occurred or you code if in wrong format',
+            );
+            break;
+        case 'wrongSolution':
+            NotificationManager.error('Unfortunately the solution is wrong');
+            break;
+    }
+};
+
 const CodeSubmissionForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [codeTasks, setCodeTasks] = useState([]);
+    const [computationError, setCmputationError] = useState('');
     const [selectedTaskId, setSelectedTaskId] = useState(undefined);
     const [formState, setFormState] = useReducer(
         (formState, newState) => ({ ...formState, ...newState }),
@@ -97,21 +129,40 @@ const CodeSubmissionForm = () => {
     const handleSolutionInputChange = (event) => setFormState({ taskSolution: event.target.value });
 
     const handleSubmit = async () => {
-        // TODO: Add form validation
-        setFormErrors(validateSolutionSubmissionForm(formState));
-        const response = await requestPostCodeSubmission(formState);
-        // success pop-up
+        setFormErrors(getSolutionSubmissionFormValidationErrors(formState));
+
+        if (
+            isEmpty(formErrors.codeTaskId) ||
+            isEmpty(formErrors.codeTaskId) ||
+            isEmpty(formErrors.codeTaskId)
+        ) {
+            const response = await requestPostCodeSubmission(formState);
+
+            if (!isEmpty(response.computationErrorMessage)) {
+                emitNotification(NOTIFICATION_TYPE.COMPUTATION_ERROR);
+            } else if (response.isSucesss) {
+                emitNotification(NOTIFICATION_TYPE.SUCCESS);
+            } else {
+                emitNotification(NOTIFICATION_TYPE.WRONG_SOLUTION);
+            }
+            setCmputationError(response.computationErrorMessage);
+        }
     };
 
     return (
         <Fragment>
             <LoaderScreen dim isLoading={isLoading} />
             <div className={styles.formContainer}>
-                <InputField name={'NAME'} onChange={handleNameInputChange} />
+                <InputField
+                    name={'NAME'}
+                    onChange={handleNameInputChange}
+                    error={formErrors.userName}
+                />
                 <DropdownSelectField
                     name={'SELECT TASK'}
                     placeholder={'Search...'}
                     options={taskSelectOptions}
+                    error={formErrors.codeTaskId}
                     onChange={handleTaskSelection}
                 />
                 <InputField
@@ -126,12 +177,27 @@ const CodeSubmissionForm = () => {
                     isTextarea
                     name={'SOLUTION CODE'}
                     placeholder={'Here goes tasks implementation in C# ...'}
+                    error={formErrors.taskSolution}
                     onChange={handleSolutionInputChange}
                 />
                 <FormFooter>
-                    <Button text={'SUBMIT'} type={BUTTON_TYPE.SUBMIT} onClick={handleSubmit} />
+                    <Button
+                        color={'primary'}
+                        text={'SUBMIT'}
+                        type={BUTTON_TYPE.SUBMIT}
+                        onClick={handleSubmit}
+                    />
                 </FormFooter>
             </div>
+            <InputField
+                disabled
+                isTextarea
+                rows={4}
+                name={'SYSTEM CONSOLE'}
+                value={computationError}
+            />
+
+            <NotificationContainer />
         </Fragment>
     );
 };

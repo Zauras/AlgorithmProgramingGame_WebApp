@@ -20,11 +20,8 @@ namespace AlgorithmProgramingGame_WebApp.Providers
             _users = database.GetCollection<UserEntity>(settings.UsersCollectionName);
         }
 
-        public IEnumerable<UserScoreDto> GetTopScores(int countOfTopScores)
-        {
-
-
-            var x = _users.Aggregate()
+        public IEnumerable<UserScoreDto> GetTopScores(int countOfTopScores) =>
+            _users.Aggregate()
                 .Project(user => new UserScoreDto
                 {
                     UserName = user.Name,
@@ -41,34 +38,8 @@ namespace AlgorithmProgramingGame_WebApp.Providers
                     // Work around since MongoDb Driver does not support LINQ Distinct()
                     userScoreDto.CodeTaskIds = userScoreDto.CodeTaskIds.Distinct().ToArray();
                     return userScoreDto;
-                });
-            
-                // .Limit(countOfTopScores)
-                // .ToList();
-                // .Select(user => new UserScoreDto
-                // {
-                //     UserName = user.Name,
-                //     SubmissionsCount = user.SubmissionsCount,
-                //     ScoreCount = user.Scores.Length,
-                //     CodeTaskIds = user.Scores.Select(score => score.CodeTaskId)
-                // });
-
-            // .Project(user => new UserScoreDto
-            // {
-            //     UserName = user.Name,
-            //     SubmissionsCount = user.SubmissionsCount,
-            //     ScoreCount = user.Scores.Length,
-            //     CodeTaskIds = user.Scores.Select(score => score.CodeTaskId)
-            // }).ToList()
-            // .Select(userScoreDto =>
-            // {
-            //     // Work around since MongoDb Driver does not support LINQ Distinct()
-            //     userScoreDto.CodeTaskIds = userScoreDto.CodeTaskIds.Distinct().ToArray();
-            //     return userScoreDto;
-            // }).ToList();
-            return x;
-
-        }
+            });
+        
 
         public bool IsNameExists(string name) =>
             _users.Find(user => user.Name == name).Limit(1).CountDocuments() > 0;
@@ -120,31 +91,26 @@ namespace AlgorithmProgramingGame_WebApp.Providers
 
         private void IncrementSubmissionsCount(string userName, int amountOfIncrement = 1)
         {
+            var updateQuery = new UpdateDefinitionBuilder<UserEntity>()
+                .Inc(user => user.SubmissionsCount, amountOfIncrement);
             
-            var update = new UpdateDefinitionBuilder<UserEntity>().Inc(e => e.SubmissionsCount, amountOfIncrement);
-            _users.FindOneAndUpdate(e => e.Name == userName, update);
+            _users.FindOneAndUpdate(e => e.Name == userName, updateQuery);
         }
 
         private void InsertScore(int codeTaskId, string taskSolution, string userName)
         {
-            var s = new ScoreEntity
+            var scoreEntity = new ScoreEntity
             {
                 CodeTaskId = codeTaskId,
                 SolutionCode = taskSolution
             };
 
-            // _users.Find(e => e.Name == userName).Single().Scores
-            //     .Append(s);
+            var updateQuery = new UpdateDefinitionBuilder<UserEntity>()
+                .Push(user => user.Scores, scoreEntity);
             
-            var update = new UpdateDefinitionBuilder<UserEntity>().Push(e => e.Scores, s);
-            _users.FindOneAndUpdate(e => e.Name == userName, update);
+            _users.FindOneAndUpdate(user => user.Name == userName, updateQuery);
             
             IncrementSubmissionsCount(userName);
-            
-            // var filter =
-            //     Builders<UserEntity>.Filter.Eq(e => e.Name, taskSolutionSubmission.UserName);
-            // var update = Builders<ScoreEntity[]>.Update.Push<ScoreEntity>();
-            // _users.FindOneAndUpdate(filter, update);
         }
 
 

@@ -26,20 +26,5 @@ namespace AlgorithmProgramingGame_WebApp.Providers
             return taskEntities.Select(CodeTaskModel.ToDomainModel);
         }
         
-        // public CodeTaskModel Create(CodeTaskEntity task)
-        // {
-        //     _tasks.InsertOne(task);
-        //     return task;
-        // }
-        //
-        // public void Update(string id, CodeTask taskIn) =>
-        //     _tasks.ReplaceOne(task => task.Id == id, taskIn);
-        //
-        // public void Remove(CodeTask taskIn) =>
-        //     _tasks.DeleteOne(task => task.Id == taskIn.Id);
-        //
-        // public void Remove(string id) => 
-        //     _tasks.DeleteOne(task => task.Id == id);
-        
     }
 }
