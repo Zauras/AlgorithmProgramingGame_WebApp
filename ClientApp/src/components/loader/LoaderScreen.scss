@@ -9,6 +9,8 @@
     width: 100%;
     height: 100%;
 
+    z-index:1000;
+
     &__dim {
         background-color: rgba(0, 0, 0, 0.5);
     }
@@ -16,7 +18,6 @@
 
 .loader-align {
     align-items: center;
-    //background: rgba(0,0,0,0.4);
     display: flex;
     height: calc(100vh - 0vh);
     justify-content: center;

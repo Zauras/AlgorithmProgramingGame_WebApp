@@ -64,23 +64,8 @@ export class NavMenu extends Component {
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className={styles.navLink} to='/scores'>
-                                        TOP 3
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
                                     <NavLink tag={Link} className={styles.navLink} to='/'>
-                                        Home
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className={styles.navLink} to='/counter'>
-                                        Counter
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className={styles.navLink} to='/fetch-data'>
-                                        Fetch data
+                                        TOP SCORES
                                     </NavLink>
                                 </NavItem>
                             </ul>
